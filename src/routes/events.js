@@ -1,4 +1,5 @@
 const express = require('express');
+const moment = require('moment');
 
 const models = require('../../db/models');
 
@@ -18,6 +19,9 @@ router.get('/events/new', (_, res) => {
 router.get('/events/:id', (req, res) => {
     models.Event.findByPk(req.params.id, { include: [{ model: models.Rsvp }] })
         .then((event) => {
+            let { createdAt } = event.createdAt;
+            createdAt = moment(createdAt).format('MMMM Do YYYY, h:mm:ss a');
+            event.createdAtFormatted = createdAt;
             res.render('events-show', { event: event });
         })
         .catch((err) => {
