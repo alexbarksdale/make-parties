@@ -82,6 +82,18 @@ app.put('/events/:id', (req, res) => {
             console.log(err);
         });
 });
+
+app.delete('/events/:id', (req, res) => {
+    models.Event.findByPk(req.params.id)
+        .then((event) => {
+            event.destroy();
+            res.redirect('/');
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`App listening on port: ${PORT}`);
