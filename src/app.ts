@@ -2,7 +2,8 @@ import express, { Request, Response } from 'express';
 import exphbs from 'express-handlebars';
 import { urlencoded } from 'body-parser';
 
-const models = require('../db/models');
+// @ts-ignore
+import * as models from '../db/models';
 
 // Initialize express
 const app = express();
@@ -24,10 +25,21 @@ app.get('/events/new', (_, res: Response) => {
     res.render('events-new', {});
 });
 
+app.get('/events/:id', (req: Request, res: Response) => {
+    models.Event.findByPk(req.params.id)
+        .then((event: any) => {
+            res.render('events-show', { event: event });
+        })
+        .catch((err: any) => {
+            console.log(err.message);
+        });
+});
+
 app.post('/events', (req: Request, res: Response) => {
     models.Event.create(req.body)
-        .then(() => {
-            res.redirect('/');
+        .then((event: any) => {
+            // Redirect to events/:id
+            res.redirect(`/events/${event.id}`);
         })
         .catch((err: any) => {
             console.log(err);
