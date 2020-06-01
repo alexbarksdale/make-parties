@@ -1,20 +1,28 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const Handlebars = require('handlebars');
 const methodOverride = require('method-override');
 const bodyParser = require('body-parser');
+const { allowInsecurePrototypeAccess } = require('@handlebars/allow-prototype-access');
+
 const models = require('../db/models');
 
 // Initialize express
 const app = express();
+const hbs = exphbs.create({
+    defaultLayout: 'main',
+    handlebars: allowInsecurePrototypeAccess(Handlebars),
+});
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 
 // View engine setup
-app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
+// GET - Routes
 app.get('/', (_, res) => {
     models.Event.findAll({ order: [['createdAt', 'DESC']] }).then((events) => {
         res.render('events-index', { events: events });
@@ -45,6 +53,7 @@ app.get('/events/:id/edit', (req, res) => {
         });
 });
 
+// POST - Routes
 app.post('/events', (req, res) => {
     models.Event.create(req.body)
         .then((event) => {
@@ -56,6 +65,7 @@ app.post('/events', (req, res) => {
         });
 });
 
+// PUT - Routes
 app.put('/events/:id', (req, res) => {
     models.Event.findByPk(req.params.id)
         .then((event) => {
