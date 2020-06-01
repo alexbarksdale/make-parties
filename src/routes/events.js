@@ -82,11 +82,23 @@ router.put('/events/:id', (req, res) => {
         });
 });
 
+// DELETE - Routes
 router.delete('/events/:id', (req, res) => {
     models.Event.findByPk(req.params.id)
         .then((event) => {
             event.destroy();
             res.redirect('/');
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+});
+
+router.delete('/events/:eventId/rsvps/:id', (req, res) => {
+    models.Rsvp.findByPk(req.params.id)
+        .then((rsvp) => {
+            rsvp.destroy();
+            res.redirect(`/events/${req.params.eventId}`);
         })
         .catch((err) => {
             console.log(err);
