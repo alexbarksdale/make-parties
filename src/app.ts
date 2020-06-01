@@ -1,8 +1,12 @@
-import express, { Response } from 'express';
+import express, { Request, Response } from 'express';
 import exphbs from 'express-handlebars';
+import { urlencoded } from 'body-parser';
 
 // Initialize express
 const app = express();
+
+// Middlewares
+app.use(urlencoded({ extended: true }));
 
 // View engine setup
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
@@ -31,6 +35,14 @@ const events = [
 
 app.get('/', (_, res: Response) => {
     res.render('events-index', { events: events });
+});
+
+app.get('/events/new', (_, res: Response) => {
+    res.render('events-new', {});
+});
+
+app.post('/events', (req: Request) => {
+    console.log(req.body);
 });
 
 const PORT = process.env.PORT || 3000;
